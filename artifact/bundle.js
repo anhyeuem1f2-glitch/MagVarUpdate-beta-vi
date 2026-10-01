@@ -6,6 +6,10 @@ import{GoogleGenAI as e}from'https://testingcf.jsdelivr.net/npm/@google/genai@2.
  */
 (function(){
   'use strict';
+  var W=(function(){try{if(window.parent&&window.parent!==window&&window.parent.document&&window.parent.document.body)return window.parent;}catch(e){}return window;})();
+  var D=W.document;
+  var NF=W.NodeFilter||window.NodeFilter;
+  var MO=W.MutationObserver||window.MutationObserver;
   var EXACT={"MVU 变量框架":"Khung biến MVU","MVU Variable Framework":"Khung biến MVU","当前版本":"Phiên bản hiện tại","Current version":"Phiên bản hiện tại","未知":"Không rõ","Unknown":"Không rõ","通知设置":"Cài đặt thông báo","Notification Settings":"Cài đặt thông báo","自动清理变量":"Tự động dọn biến","Automatic Variable Cleanup":"Tự động dọn biến","启用自动清理变量":"Bật tự động dọn biến","Enable automatic variable cleanup":"Bật tự động dọn biến","清理策略":"Chiến lược dọn dẹp","Cleanup strategy":"Chiến lược dọn dẹp","快照保留间隔":"Khoảng giữ snapshot","角色卡覆盖":"Ghi đè card nhân vật","Character Override":"Ghi đè card nhân vật","变量更新方式":"Cách cập nhật biến","Variable update method":"Cách cập nhật biến","模型列表":"Danh sách model","Model list":"Danh sách model","修复按钮":"Nút sửa chữa","Repair buttons":"Nút sửa chữa","重新处理变量":"Xử lý lại biến","Reprocess variables":"Xử lý lại biến","重新读取初始变量":"Đọc lại biến khởi tạo","Reload initial variables":"Đọc lại biến khởi tạo","快照楼层":"Đặt tầng snapshot","Snapshot floor":"Đặt tầng snapshot","重演楼层":"Chạy lại tầng","Replay floor":"Chạy lại tầng","重试额外模型解析":"Thử lại phân tích bằng model phụ","Retry extra-model parsing":"Thử lại phân tích bằng model phụ","清除旧楼层变量":"Xóa biến ở tầng cũ","Clear old floor variables":"Xóa biến ở tầng cũ","帮助":"Trợ giúp","Help":"Trợ giúp","兼容性":"Tương thích","Compatibility":"Tương thích","启用":"Bật","Enable":"Bật","关闭":"Tắt","Disable":"Tắt","是":"Có","Yes":"Có","否":"Không","No":"Không","确认":"Xác nhận","Confirm":"Xác nhận","取消":"Hủy","Cancel":"Hủy","默认":"Mặc định","Default":"Mặc định","更多":"Thêm","More":"Thêm","自定义":"Tùy chỉnh","Custom":"Tùy chỉnh","密钥":"Khóa API","API key":"Khóa API","温度":"Temperature","Temperature":"Temperature","频率惩罚":"Phạt tần suất","Frequency penalty":"Phạt tần suất","存在惩罚":"Phạt hiện diện","Presence penalty":"Phạt hiện diện","聊天消息":"Tin nhắn chat","Chat messages":"Tin nhắn chat","工具调用":"Tool call","Tool calls":"Tool call","格式化输出":"Đầu ra có cấu trúc","Structured output":"Đầu ra có cấu trúc","随AI输出":"Theo đầu ra AI","With AI output":"Theo đầu ra AI","额外模型解析":"Phân tích bằng model phụ","Extra-model parsing":"Phân tích bằng model phụ","启用自动请求":"Bật yêu cầu tự động","Enable automatic requests":"Bật yêu cầu tự động","世界书条目白名单正则":"Regex whitelist entry World Book","Worldbook entry whitelist regex":"Regex whitelist entry World Book","世界书条目黑名单正则":"Regex blacklist entry World Book","Worldbook entry blacklist regex":"Regex blacklist entry World Book","其他预设名称":"Tên preset khác","Other preset name":"Tên preset khác","随机头部":"Random header","Random header":"Random header","应答格式":"Định dạng phản hồi","Response format":"Định dạng phản hồi","关闭thinking":"Tắt thinking","Disable thinking":"Tắt thinking","最大回复token数":"Token phản hồi tối đa","Max response tokens":"Token phản hồi tối đa","组件":"Thành phần","Component":"Thành phần","许可证":"Giấy phép","License":"Giấy phép"};
   var PHRASES={"变量初始化成功":"Khởi tạo biến thành công","Variable initialization succeeded":"Khởi tạo biến thành công","变量初始化失败":"Khởi tạo biến thất bại","Variable initialization failed":"Khởi tạo biến thất bại","解析完成":"Phân tích hoàn tất","Parsing completed":"Phân tích hoàn tất","处理变量中":"Đang xử lý biến","Processing variables":"Đang xử lý biến","读取角色卡配置失败":"Đọc cấu hình card thất bại","Failed to read character card configuration":"Đọc cấu hình card thất bại","保存角色卡配置失败":"Lưu cấu hình card thất bại","Failed to save character card configuration":"Lưu cấu hình card thất bại","自动清理":"Tự động dọn","Auto cleanup":"Tự động dọn","备份并清理":"Sao lưu và dọn","Backup and clean":"Sao lưu và dọn","仅清理":"Chỉ dọn","Clean only":"Chỉ dọn","不再提醒":"Không nhắc lại","Do not remind again":"Không nhắc lại","聊天变量已初始化":"Biến chat đã được khởi tạo","Chat variables initialized":"Biến chat đã được khởi tạo","变量初始化完成":"Khởi tạo biến hoàn tất","Variable initialization complete":"Khởi tạo biến hoàn tất","世界书":"World Book","worldbook":"World Book","楼层":"tầng","floor":"tầng","更多来源":"nguồn bổ sung","Additional source":"nguồn bổ sung","请求已取消":"Yêu cầu đã bị hủy","request was cancelled":"Yêu cầu đã bị hủy","返回了空回复":"trả về phản hồi rỗng","returned an empty response":"trả về phản hồi rỗng","达到长度上限而被截断":"bị cắt do đạt giới hạn độ dài","truncated because it reached the length limit":"bị cắt do đạt giới hạn độ dài"};
   var phraseKeys=Object.keys(PHRASES).sort(function(a,b){return b.length-a.length;});
@@ -27,14 +31,19 @@ import{GoogleGenAI as e}from'https://testingcf.jsdelivr.net/npm/@google/genai@2.
     if(root.nodeType===3){var nv=tx(root.nodeValue);if(nv!==root.nodeValue)root.nodeValue=nv;return;}
     if(root.nodeType!==1&&root.nodeType!==9&&root.nodeType!==11)return;
     if(root.nodeType===1)transEl(root);
-    var w=(root.ownerDocument||document).createTreeWalker(root,NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT);
+    var w=(root.ownerDocument||D).createTreeWalker(root,NF.SHOW_TEXT|NF.SHOW_ELEMENT);
     var n; while((n=w.nextNode())){if(n.nodeType===3){var t=tx(n.nodeValue);if(t!==n.nodeValue)n.nodeValue=t;}else transEl(n);}
   }
-  function roots(){try{return Array.prototype.slice.call(document.querySelectorAll("#extensions_settings2 div[script_id]"));}catch(e){return [];}}
+  function roots(){try{
+    var out=Array.prototype.slice.call(D.querySelectorAll("#extensions_settings2 div[script_id]"));
+    var btnNames={"重新处理变量":1,"重新读取初始变量":1,"快照楼层":1,"重演楼层":1,"重试额外模型解析":1,"清除旧楼层变量":1};
+    Array.prototype.forEach.call(D.querySelectorAll("button"),function(b){var s=String(b.textContent||'').trim();if(btnNames[s])out.push(b);});
+    return out;
+  }catch(e){return [];}}
   function run(){roots().forEach(walk);}
   try{
     run();
-    var ob=new MutationObserver(function(ms){
+    var ob=new MO(function(ms){
       ms.forEach(function(m){
         if(m.type==='characterData')walk(m.target);
         Array.prototype.forEach.call(m.addedNodes||[],function(n){
@@ -46,7 +55,7 @@ import{GoogleGenAI as e}from'https://testingcf.jsdelivr.net/npm/@google/genai@2.
         });
       });
     });
-    ob.observe(document.documentElement||document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['placeholder','title','aria-label']});
+    ob.observe(D.documentElement||D.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['placeholder','title','aria-label']});
   }catch(e){}
 })();
 
@@ -56,6 +65,9 @@ import{GoogleGenAI as e}from'https://testingcf.jsdelivr.net/npm/@google/genai@2.
  */
 (function(){
   'use strict';
+  var W2=(function(){try{if(window.parent&&window.parent!==window&&window.parent.document&&window.parent.document.body)return window.parent;}catch(e){}return window;})();
+  var NF2=W2.NodeFilter||window.NodeFilter;
+  var MO2=W2.MutationObserver||window.MutationObserver;
   var EXACT={"MVU 变量框架":"Khung biến MVU","当前版本":"Phiên bản hiện tại","未知":"Không rõ","通知设置":"Cài đặt thông báo","自动清理变量":"Tự động dọn biến","启用自动清理变量":"Bật tự động dọn biến","清理策略":"Chiến lược dọn dẹp","快照保留间隔":"Khoảng giữ snapshot","角色卡覆盖":"Ghi đè card nhân vật","变量更新方式":"Cách cập nhật biến","模型列表":"Danh sách model","修复按钮":"Nút sửa chữa","重新处理变量":"Xử lý lại biến","重新读取初始变量":"Đọc lại biến khởi tạo","快照楼层":"Đặt tầng snapshot","重演楼层":"Chạy lại tầng","重试额外模型解析":"Thử lại phân tích bằng model phụ","清除旧楼层变量":"Xóa biến ở tầng cũ","帮助":"Trợ giúp","兼容性":"Tương thích","启用":"Bật","关闭":"Tắt","是":"Có","否":"Không","确认":"Xác nhận","取消":"Hủy","默认":"Mặc định","更多":"Thêm","自定义":"Tùy chỉnh","密钥":"Khóa API","温度":"Temperature","频率惩罚":"Phạt tần suất","存在惩罚":"Phạt hiện diện","聊天消息":"Tin nhắn chat","工具调用":"Tool call","格式化输出":"Đầu ra có cấu trúc","随AI输出":"Theo đầu ra AI","额外模型解析":"Phân tích bằng model phụ","启用自动请求":"Bật yêu cầu tự động","世界书条目白名单正则":"Regex whitelist entry World Book","世界书条目黑名单正则":"Regex blacklist entry World Book","其他预设名称":"Tên preset khác","随机头部":"Random header","应答格式":"Định dạng phản hồi","关闭thinking":"Tắt thinking","最大回复token数":"Token phản hồi tối đa","组件":"Thành phần","许可证":"Giấy phép"};
   var PHRASES={"变量初始化成功":"Khởi tạo biến thành công","变量初始化失败":"Khởi tạo biến thất bại","解析完成":"Phân tích hoàn tất","处理变量中":"Đang xử lý biến","读取角色卡配置失败":"Đọc cấu hình card thất bại","保存角色卡配置失败":"Lưu cấu hình card thất bại","自动清理":"Tự động dọn","备份并清理":"Sao lưu và dọn","仅清理":"Chỉ dọn","不再提醒":"Không nhắc lại","聊天变量已初始化":"Biến chat đã được khởi tạo","变量初始化完成":"Khởi tạo biến hoàn tất","世界书":"World Book","楼层":"tầng","更多来源":"nguồn bổ sung","请求已取消":"Yêu cầu đã bị hủy","返回了空回复":"trả về phản hồi rỗng","达到长度上限而被截断":"bị cắt do đạt giới hạn độ dài"};
   var keys=Object.keys(PHRASES).sort(function(a,b){return b.length-a.length;});
@@ -80,7 +92,7 @@ import{GoogleGenAI as e}from'https://testingcf.jsdelivr.net/npm/@google/genai@2.
     if(root.nodeType!==1&&root.nodeType!==9&&root.nodeType!==11)return;
     if(root.nodeType===1){attr(root,'title');attr(root,'aria-label');attr(root,'placeholder');}
     var w;
-    try{w=DOC.createTreeWalker(root,NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT);}catch(e){return;}
+    try{w=DOC.createTreeWalker(root,NF2.SHOW_TEXT|NF2.SHOW_ELEMENT);}catch(e){return;}
     var x;while((x=w.nextNode())){
       if(x.nodeType===3){var t=tx(x.nodeValue);if(t!==x.nodeValue)x.nodeValue=t;}
       else{attr(x,'title');attr(x,'aria-label');attr(x,'placeholder');}
@@ -89,7 +101,7 @@ import{GoogleGenAI as e}from'https://testingcf.jsdelivr.net/npm/@google/genai@2.
   function run(){try{walk(DOC.body||DOC.documentElement);}catch(e){}}
   try{
     run();
-    var ob=new MutationObserver(function(ms){
+    var ob=new MO2(function(ms){
       for(var i=0;i<ms.length;i++){
         var m=ms[i];
         if(m.type==='characterData')walk(m.target);

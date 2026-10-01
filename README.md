@@ -1,2 +1,3 @@
 # MagVarUpdate-beta-vi
-Bản dùng cho card Pokémon. Không đổi các key/config/runtime tiếng Trung có vai trò logic.
+
+Bản Việt hóa. Sửa lớp dịch UI để chạy trên document của SillyTavern; giữ nguyên key/event nội bộ.
