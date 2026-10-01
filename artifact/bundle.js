@@ -49,3 +49,55 @@ import{GoogleGenAI as e}from'https://testingcf.jsdelivr.net/npm/@google/genai@2.
     ob.observe(document.documentElement||document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['placeholder','title','aria-label']});
   }catch(e){}
 })();
+
+/* ===== MAGVARUPDATE VI: GLOBAL CHINESE-ONLY UI PATCH =====
+ * Applies only known Chinese UI labels to the parent SillyTavern document.
+ * Does not touch English SillyTavern core labels or internal data.
+ */
+(function(){
+  'use strict';
+  var EXACT={"MVU 变量框架":"Khung biến MVU","当前版本":"Phiên bản hiện tại","未知":"Không rõ","通知设置":"Cài đặt thông báo","自动清理变量":"Tự động dọn biến","启用自动清理变量":"Bật tự động dọn biến","清理策略":"Chiến lược dọn dẹp","快照保留间隔":"Khoảng giữ snapshot","角色卡覆盖":"Ghi đè card nhân vật","变量更新方式":"Cách cập nhật biến","模型列表":"Danh sách model","修复按钮":"Nút sửa chữa","重新处理变量":"Xử lý lại biến","重新读取初始变量":"Đọc lại biến khởi tạo","快照楼层":"Đặt tầng snapshot","重演楼层":"Chạy lại tầng","重试额外模型解析":"Thử lại phân tích bằng model phụ","清除旧楼层变量":"Xóa biến ở tầng cũ","帮助":"Trợ giúp","兼容性":"Tương thích","启用":"Bật","关闭":"Tắt","是":"Có","否":"Không","确认":"Xác nhận","取消":"Hủy","默认":"Mặc định","更多":"Thêm","自定义":"Tùy chỉnh","密钥":"Khóa API","温度":"Temperature","频率惩罚":"Phạt tần suất","存在惩罚":"Phạt hiện diện","聊天消息":"Tin nhắn chat","工具调用":"Tool call","格式化输出":"Đầu ra có cấu trúc","随AI输出":"Theo đầu ra AI","额外模型解析":"Phân tích bằng model phụ","启用自动请求":"Bật yêu cầu tự động","世界书条目白名单正则":"Regex whitelist entry World Book","世界书条目黑名单正则":"Regex blacklist entry World Book","其他预设名称":"Tên preset khác","随机头部":"Random header","应答格式":"Định dạng phản hồi","关闭thinking":"Tắt thinking","最大回复token数":"Token phản hồi tối đa","组件":"Thành phần","许可证":"Giấy phép"};
+  var PHRASES={"变量初始化成功":"Khởi tạo biến thành công","变量初始化失败":"Khởi tạo biến thất bại","解析完成":"Phân tích hoàn tất","处理变量中":"Đang xử lý biến","读取角色卡配置失败":"Đọc cấu hình card thất bại","保存角色卡配置失败":"Lưu cấu hình card thất bại","自动清理":"Tự động dọn","备份并清理":"Sao lưu và dọn","仅清理":"Chỉ dọn","不再提醒":"Không nhắc lại","聊天变量已初始化":"Biến chat đã được khởi tạo","变量初始化完成":"Khởi tạo biến hoàn tất","世界书":"World Book","楼层":"tầng","更多来源":"nguồn bổ sung","请求已取消":"Yêu cầu đã bị hủy","返回了空回复":"trả về phản hồi rỗng","达到长度上限而被截断":"bị cắt do đạt giới hạn độ dài"};
+  var keys=Object.keys(PHRASES).sort(function(a,b){return b.length-a.length;});
+  function tx(s){
+    s=String(s==null?'':s);
+    if(!/[\u3400-\u9fff]/.test(s)) return s;
+    var lead=(s.match(/^\s*/)||[''])[0], tail=(s.match(/\s*$/)||[''])[0];
+    var core=s.slice(lead.length,s.length-tail.length);
+    if(Object.prototype.hasOwnProperty.call(EXACT,core)) return lead+EXACT[core]+tail;
+    var out=core;
+    for(var i=0;i<keys.length;i++){var k=keys[i];if(out.indexOf(k)>=0)out=out.split(k).join(PHRASES[k]);}
+    return lead+out+tail;
+  }
+  var DOC=document;
+  try{if(window.parent&&window.parent!==window&&window.parent.document)DOC=window.parent.document;}catch(e){}
+  function attr(el,a){
+    try{if(el.hasAttribute&&el.hasAttribute(a)){var v=el.getAttribute(a),n=tx(v);if(n!==v)el.setAttribute(a,n);}}catch(e){}
+  }
+  function walk(root){
+    if(!root)return;
+    if(root.nodeType===3){var n=tx(root.nodeValue);if(n!==root.nodeValue)root.nodeValue=n;return;}
+    if(root.nodeType!==1&&root.nodeType!==9&&root.nodeType!==11)return;
+    if(root.nodeType===1){attr(root,'title');attr(root,'aria-label');attr(root,'placeholder');}
+    var w;
+    try{w=DOC.createTreeWalker(root,NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT);}catch(e){return;}
+    var x;while((x=w.nextNode())){
+      if(x.nodeType===3){var t=tx(x.nodeValue);if(t!==x.nodeValue)x.nodeValue=t;}
+      else{attr(x,'title');attr(x,'aria-label');attr(x,'placeholder');}
+    }
+  }
+  function run(){try{walk(DOC.body||DOC.documentElement);}catch(e){}}
+  try{
+    run();
+    var ob=new MutationObserver(function(ms){
+      for(var i=0;i<ms.length;i++){
+        var m=ms[i];
+        if(m.type==='characterData')walk(m.target);
+        var a=m.addedNodes||[];
+        for(var j=0;j<a.length;j++)walk(a[j]);
+      }
+    });
+    ob.observe(DOC.documentElement||DOC.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['title','aria-label','placeholder']});
+    setTimeout(run,250);setTimeout(run,1000);setTimeout(run,3000);
+  }catch(e){}
+})();
